@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@massalabs/massa-web3": "^1.14.0",
     "@next/font": "13.1.6",
     "@types/node": "18.13.0",
     "@types/react": "18.0.28",
@@ -24,7 +25,7 @@
     "fs": false,
     "path": false,
     "os": false,
-    "net":false,
-    "tls":false
+    "net": false,
+    "tls": false
   }
 }

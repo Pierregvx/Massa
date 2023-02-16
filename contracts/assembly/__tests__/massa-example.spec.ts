@@ -1,12 +1,14 @@
 import { stringToBytes } from '@massalabs/as-types';
-import { trigger_value, increment } from '../contracts/main';
+import { trigger_value,init, Increment,event_test } from '../contracts/main';
 
 describe('Group test', () => {
+  init([]);
   test('Testing trigger_value', () => {
-    expect(trigger_value([])).toStrictEqual(stringToBytes('0'));
+    expect(trigger_value([])[0]).toBe(0);
   });
   test('increment', () => {
-    increment(3);
-    expect(trigger_value([])).toStrictEqual(stringToBytes('3'));
+    Increment(1);
+    expect(trigger_value([])[0]).toBe(1);
+    
   });
 });

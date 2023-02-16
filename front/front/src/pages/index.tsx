@@ -1,54 +1,17 @@
 import Head from 'next/head';
-import Image from 'next/image';
-import { Inter } from '@next/font/google';
 import styles from '@/styles/Home.module.css';
-import BigNumber from "bignumber.js";
-
+import { init, increment, trigger_value, baseAccount, contractAddress, getEvent } from './utils';
 import {
   ClientFactory,
   Client,
-  DefaultProviderUrls,
-  IAccount,
-  IContractReadOperationResponse,
-  Args,
-  IReadData,
-  ICallData,
-  IEventFilter,
-  IEvent,
-  EOperationStatus
-} from "@massalabs/massa-web3";
+  DefaultProviderUrls} from "@massalabs/massa-web3";
 import React from 'react';
-const inter = Inter({ subsets: ['latin'] });
-const chalk = require("chalk");
 // create a base account for signing transactions
-const baseAccount = {
-  address: 'A12e97Ywxm2XXhWPRPgPpFH42hz9PTM3swie1L9ZdJ256vmUhkrV',
-  secretKey: 'S127JMNMntDKS5d6p4EzERm5TLmpnXCjq6noMQbeAMpQqCQcHugj',
-  publicKey: "P1ZLPkSszVMLjjcgkGEPYAdPpxYHUnN2o1GLvNDyMmjUVu9FQnr"
-} as IAccount;
-const contractAddress = "A19VEk5fimNB9qkKxsHGkUXwBjquDyRGHrfNQMPyHWEvF5f287Q";
-async function awaitTxConfirmation(web3Client: Client, deploymentOperationId: string): Promise<void> {
-  console.log(`Awaiting ${chalk.green("FINAL")} transaction status....`);
-  let status: EOperationStatus;
-  try {
-    status = await web3Client.smartContracts().awaitRequiredOperationStatus(deploymentOperationId, EOperationStatus.FINAL);
-    console.log(`Transaction with Operation ID ${chalk.yellow(deploymentOperationId)} has reached finality!`);
-  } catch (ex) {
-    const msg = chalk.red(`Error getting finality of transaction ${chalk.yellow(deploymentOperationId)}`);
-    console.error(msg);
-    throw new Error(ex);
-  }
 
-  if (status !== EOperationStatus.FINAL) {
-    const msg = chalk.red(`Transaction ${chalk.yellow(deploymentOperationId)} did not reach finality after considerable amount of time. Try redeploying anew`);
-    console.error(msg);
-    throw new Error(msg);
-  }
-}
+
 async function createClient() {
 
   // create a base account for signing transactions
-
   // initialize a testnet client
   const client = await ClientFactory.createDefaultClient(
     DefaultProviderUrls.TESTNET,
@@ -58,75 +21,6 @@ async function createClient() {
   return client;
 
 }
-async function increment(web3Client: Client, scAddress: string) {
-  const data: string = await web3Client.smartContracts().callSmartContract({
-    fee: 100,
-    maxGas: 200000,
-    coins: 100,
-    targetAddress: scAddress,
-    functionName: "Increment",
-    parameter: (new Args()).serialize(), // this is based on input arguments
-  } as ICallData, baseAccount);
-  await awaitTxConfirmation(web3Client, data);
-  await getEvent(web3Client);
-  return data;
-}
-
-async function init(web3Client: Client, scAddress: string) {
-  const data: string = await web3Client.smartContracts().callSmartContract({
-    fee: 100,
-    maxGas: 200000,
-    coins: 100,
-    targetAddress: scAddress,
-    functionName: "init",
-    parameter: (new Args()).serialize(), // this is based on input arguments
-  } as ICallData, baseAccount);
-  await awaitTxConfirmation(web3Client, data);
-  await getEvent(web3Client);
-  return data;
-}
-// same as increment but with trigger_value
-async function trigger_value(web3Client: Client, scAddress: string) {
-  const data: string = await web3Client.smartContracts().callSmartContract({
-    fee: 0,
-    maxGas: 200000,
-    coins: 1,
-    targetAddress: scAddress,
-    functionName: "trigger_value",
-    parameter: (new Args()).serialize(), // this is based on input arguments
-  } as ICallData, baseAccount);
-  await awaitTxConfirmation(web3Client, data);
-  await getEvent(web3Client);
-  return data;
-}
-async function callevent(web3Client: Client, scAddress: string) {
-  const data: string = await web3Client.smartContracts().callSmartContract({
-    fee: 0,
-    maxGas: 200000,
-    coins: 1,
-    targetAddress: scAddress,
-    functionName: "trigger_value",
-    parameter: (new Args()).serialize(), // this is based on input arguments
-  } as ICallData, baseAccount);
-  await awaitTxConfirmation(web3Client, data);
-  await getEvent(web3Client);
-  return data;
-}
-const getEvent = async (web3Client: Client) => {
-
-  const eventsFilter = {
-    start: null,
-    end: null,
-    original_caller_address:
-      contractAddress,
-    original_operation_id: null,
-    emitter_address: null,
-  } as IEventFilter;
-
-  const filteredEvents: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
-  console.log("filteredEvents", filteredEvents);
-
-};
 
 export default function Home() {
   const [client, setClient] = React.useState<Client>();
@@ -141,8 +35,6 @@ export default function Home() {
 
     if (client) {
       getEvent(client);
-
-
     }
 
   }, [client]);
@@ -177,18 +69,15 @@ export default function Home() {
             });
           }
         }}>increment</button>
-
         {/* button that call trigger_value */}
         <button onClick={() => {
           if (client) {
-            trigger_value(client, contractAddress);
+            trigger_value(client, contractAddress).then((operationId) => {
+              console.log("operationId", operationId);
+            });
           }
         }}>trigger_value</button>
 
-
-
-
-        kdea
       </main>
     </>
   );
