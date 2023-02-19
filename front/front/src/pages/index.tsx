@@ -24,7 +24,7 @@ async function createClient() {
 
 export default function Home() {
   const [client, setClient] = React.useState<Client>();
-  const [listValues, setListValues] = React.useState<number>(0);
+  const [inputNumber, setInputNumber] = React.useState<number>(0);
  
   React.useEffect(() => {
     createClient().then((client) => {
@@ -55,15 +55,20 @@ export default function Home() {
       <main className={styles.main}>
 
        
-        {/* button that call increment */}
-
+        {/* input that take a number and button that call increment with this number */}
+        <input type="number" onChange={(e) => {
+          setInputNumber(Number(e.target.value));
+        }} />
         <button onClick={() => {
           if (client) {
-            increment(client, contractAddress).then((operationId) => {
+            console.log(inputNumber)
+            increment(client, contractAddress, inputNumber).then((operationId) => {
               console.log("operationId", operationId);
             });
           }
         }}>increment</button>
+
+        
         {/* display all events */}
         <div>
           {event.map((value, index) => {

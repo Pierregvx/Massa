@@ -6,7 +6,7 @@ export const baseAccount = {
     secretKey: 'S127JMNMntDKS5d6p4EzERm5TLmpnXCjq6noMQbeAMpQqCQcHugj',
     publicKey: "P1ZLPkSszVMLjjcgkGEPYAdPpxYHUnN2o1GLvNDyMmjUVu9FQnr"
 } as IAccount;
-export const contractAddress = "A12dfXYtNdjXjovVwaKYRp8YJCjqQ4NWbUSDqdWYggb6UFKdgrYJ";
+export const contractAddress = "A122gEnEasopddai2Ytx6Hdme4uMoP5okJZZLzPEsY9Aj5MhoSLU";
 async function awaitTxConfirmation(web3Client: Client, deploymentOperationId: string): Promise<void> {
     console.log(`Awaiting ${chalk.green("FINAL")} transaction status....`);
     let status: EOperationStatus;
@@ -25,9 +25,9 @@ async function awaitTxConfirmation(web3Client: Client, deploymentOperationId: st
         throw new Error(msg);
     }
 }
-export async function increment(web3Client: Client, scAddress: string) {
+export async function increment(web3Client: Client, scAddress: string,by:number) {
     const args = new Args();
-    args.addU32(1);
+    args.addU32(by);
     const data: string = await web3Client.smartContracts().callSmartContract({
         fee: 0,
         maxGas: 1000000,
@@ -70,13 +70,15 @@ export const getEvent= async (web3Client: Client) => {
     } as IEventFilter;
 
     const events: Array<IEvent> = await web3Client.smartContracts().getFilteredScOutputEvents(eventsFilter);
-    console.log("filteredEvents", events);
-    const numberEvents = [0, ...events.map((event) => Number(event.data))].filter((event) => !isNaN(event));
-    console.log("numberEvents", numberEvents);
+    const numberEvents = events.map((event) => Number(event.data)).filter((event) => !isNaN(event));
+    // get the numberEvents starting from the  second last item that is equal to 0
+    const lastZeroIndex = numberEvents.lastIndexOf(0, numberEvents.length - 2);
+    let lastEvents = numberEvents.slice(lastZeroIndex )
+    lastEvents = lastEvents.slice(0, lastEvents.length - 1);
 
         
 
-    return numberEvents;
+    return lastEvents;
 
 };
 
