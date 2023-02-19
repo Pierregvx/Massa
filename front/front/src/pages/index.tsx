@@ -56,17 +56,27 @@ export default function Home() {
 
        
         {/* input that take a number and button that call increment with this number */}
-        <input type="number" onChange={(e) => {
-          setInputNumber(Number(e.target.value));
-        }} />
-        <button onClick={() => {
-          if (client) {
-            console.log(inputNumber)
-            increment(client, contractAddress, inputNumber).then((operationId) => {
-              console.log("operationId", operationId);
-            });
-          }
-        }}>increment</button>
+        <form>
+          <input
+            type="number"
+            value={inputNumber}
+            onChange={(e) => {
+              setInputNumber(Number(e.target.value));
+            }}
+          />
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              if (client) {
+                increment(client, inputNumber).then((operationId) => {
+                  console.log("operationId", operationId);
+                });
+              }
+            }}
+          >
+            increment
+          </button>
+        </form>
 
         
         {/* display all events */}
@@ -84,6 +94,8 @@ export default function Home() {
           if (client) {
             trigger_value(client, contractAddress).then((operationId) => {
               console.log("operationId", operationId);
+              // refresh the page
+              window.location.reload();
             });
           }
         }}>trigger_value</button>

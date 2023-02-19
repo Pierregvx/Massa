@@ -25,14 +25,14 @@ async function awaitTxConfirmation(web3Client: Client, deploymentOperationId: st
         throw new Error(msg);
     }
 }
-export async function increment(web3Client: Client, scAddress: string,by:number) {
+export async function increment(web3Client: Client,by:number) {
     const args = new Args();
     args.addU32(by);
     const data: string = await web3Client.smartContracts().callSmartContract({
         fee: 0,
         maxGas: 1000000,
         coins: 0,
-        targetAddress: scAddress,
+        targetAddress: contractAddress,
         functionName: "Increment",
         parameter: args.serialize()
       });
@@ -54,7 +54,8 @@ export async function trigger_value(web3Client: Client, scAddress: string) {
         parameter: args.serialize()
       });
     await awaitTxConfirmation(web3Client, data);
-    await getEvent(web3Client);
+    await getEvent(web3Client)
+    
     return data;
 }
 
