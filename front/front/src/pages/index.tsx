@@ -1,6 +1,6 @@
 import Head from 'next/head';
 import styles from '@/styles/Home.module.css';
-import { init, increment, trigger_value, baseAccount, contractAddress, getEvent } from './utils';
+import {  increment, trigger_value, baseAccount, contractAddress, getEvent } from './utils';
 import {
   ClientFactory,
   Client,
@@ -24,22 +24,24 @@ async function createClient() {
 
 export default function Home() {
   const [client, setClient] = React.useState<Client>();
-  const [counter, setCounter] = React.useState<Uint8Array>();
-  const [event, setEvent] = React.useState<any>();
+  const [listValues, setListValues] = React.useState<number>(0);
+ 
   React.useEffect(() => {
     createClient().then((client) => {
       setClient(client);
     });
   }, []);
+  // set a variable event, a list of number that will take the value of getEvent
+  const [event, setEvent] = React.useState<number[]>([]);
+  // give him the value of getEvent
   React.useEffect(() => {
-
-    if (client) {
-      getEvent(client);
-    }
-
+    console.log("client", client)
+    if(client){getEvent(client).then((event) => {
+      setEvent(event);
+    });}
   }, [client]);
-  console.log(event);
 
+  
 
 
   return (
@@ -52,14 +54,7 @@ export default function Home() {
       </Head>
       <main className={styles.main}>
 
-        {/* button that call init */}
-        <button onClick={() => {
-          if (client) {
-            init(client, contractAddress).then((operationId) => {
-              console.log("operationId", operationId);
-            });
-          }
-        }}>init</button>
+       
         {/* button that call increment */}
 
         <button onClick={() => {
@@ -69,6 +64,16 @@ export default function Home() {
             });
           }
         }}>increment</button>
+        {/* display all events */}
+        <div>
+          {event.map((value, index) => {
+            return <div key={index}>{value}</div>;
+          })}
+        </div>
+        
+
+        
+       
         {/* button that call trigger_value */}
         <button onClick={() => {
           if (client) {
@@ -77,6 +82,7 @@ export default function Home() {
             });
           }
         }}>trigger_value</button>
+        
 
       </main>
     </>

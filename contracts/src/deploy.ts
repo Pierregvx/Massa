@@ -20,6 +20,7 @@ const deployerAccount = await WalletClient.getAccountFromSecretKey(privKey);
 
 const __filename = fileURLToPath(import.meta.url);
 
+
 const __dirname = path.dirname(path.dirname(__filename));
 
 (async () => {
@@ -37,4 +38,5 @@ const __dirname = path.dirname(path.dirname(__filename));
     4_200_000_000,
     true,
   );
+
 })();

@@ -1,9 +1,9 @@
 import { Args, i32ToBytes, stringToBytes, toBytes } from '@massalabs/as-types';
 import { Storage, generateEvent } from '@massalabs/massa-as-sdk';
 
-export function init(binaryArgs: StaticArray<u8>): StaticArray<u8> {
-
+export function initialize(binaryArgs: StaticArray<u8>): StaticArray<u8> {
   Storage.set(stringToBytes('last result'), i32ToBytes(0));
+  generateEvent('Initialized');
   return []
 }
 export function getStoredNumber(_: StaticArray<u8>): u32 {
@@ -13,9 +13,6 @@ export function getStoredNumber(_: StaticArray<u8>): u32 {
   return valueNumber;
 }
 export function Increment(b:u32): StaticArray<u8> {
-  // const args = new Args(binaryArgs);
-  
-  // const b = args.nextU32().expect('Argument b is missing or invalid');
   const storedNumber = getStoredNumber([]);
   const result = add(storedNumber, b);
   generateEvent(
